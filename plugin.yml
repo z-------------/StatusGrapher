@@ -1,0 +1,11 @@
+main: yy.gov.yeyacraft.statusgrapher.Main
+name: StatusGrapher
+version: 0.0.1
+author: Zachary James Guard
+description: StatusGrapher... what else? --Gourd Clooney
+#commands:
+#  statusgrapher:
+#    description: Reload StatusGrapher configuration.
+#    usage: /statusgrapher
+#    permission: statusgrapher.reload
+#    permission-message: You don't have the statusgrapher.reload permission.
