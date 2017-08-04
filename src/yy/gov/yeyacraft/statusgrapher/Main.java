@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.apache.commons.io.IOUtils;
 import java.nio.charset.StandardCharsets;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.json.simple.JSONObject;
 
 import spark.Request;
@@ -13,19 +14,19 @@ import spark.Route;
 import spark.Spark;
 import static spark.Spark.*;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements Listener {
 	
-	TimerTask calculateTPSTask = new CalculateTPSTask();
+	TimerTask calculateTPSTask = new CalculateValues();
 	
 	@Override
     public void onEnable() {
 		
 		getLogger().info("onEnable");
 		
-		// set up timer
+		// set up Timer for TPS
 		
-		long delay = 1000; // both in ms
-		long period = 5000;
+		long delay = 0;
+		long period = (long) (10 * 1000);
 		Timer timer = new Timer(true);
 		timer.scheduleAtFixedRate(calculateTPSTask, delay, period);
 		
@@ -55,14 +56,16 @@ public class Main extends JavaPlugin {
 			public Object handle(Request req, Response res) throws Exception {
 				String jsonString;
 				
-				float tps = ((CalculateTPSTask) calculateTPSTask).getTPS();
+				float tps = ((CalculateValues) calculateTPSTask).getTPS();
 				int playerCount = Bukkit.getOnlinePlayers().size();
 				long timeNow = System.currentTimeMillis();
 				
 				JSONObject json = new JSONObject();
 				JSONObject data = new JSONObject();
+				
 				data.put("tps", tps);
 				data.put("playerCount", playerCount);
+				
 				json.put("data", data);
 				json.put("time", timeNow);
 				
@@ -76,9 +79,13 @@ public class Main extends JavaPlugin {
 		
 		get("/get_past_data", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
-				String jsonString = ((CalculateTPSTask) calculateTPSTask).getTPSRecord().toString();
+				JSONObject pastData = new JSONObject();
+				
+				pastData.put("tps", ((CalculateValues) calculateTPSTask).getTPSRecord());
+				pastData.put("playerCount", ((CalculateValues) calculateTPSTask).getPlayerCountRecord());
+				
 				res.type("application/json");
-				return jsonString;
+				return pastData.toString();
 			}
 		});
 		
@@ -86,10 +93,7 @@ public class Main extends JavaPlugin {
    
     @Override
     public void onDisable() {
-    	
     	getLogger().info("onDisable");
-    	getLogger().info("last calculated TPS: " + Float.toString(((CalculateTPSTask) calculateTPSTask).getTPS()));
-       
     }
     
 }

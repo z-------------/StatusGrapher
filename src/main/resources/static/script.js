@@ -7,23 +7,35 @@ const request = function(url, callback) {
   req.send()
 }
 
+const UPDATE_INTERVAL = 10 * 1000; // doesn't have to match the one in Main.java, but if it's too high then we'll just be getting repeats of the same data
+
 const GET_PAST_DATA_URL = "/get_past_data"
 const UPDATE_DATA_URL = "/update_data"
 
-var canvas = document.querySelector(".chart--tps")
-var ctx = canvas.getContext("2d")
+var canvasTPS = document.querySelector(".chart--tps")
+var ctxTPS = canvasTPS.getContext("2d")
 
-function updateChart(chart, data) {
-  chart.data.datasets[0].data.push(data)
+var canvasPlayerCount = document.querySelector(".chart--player-count")
+var ctxPlayerCount = canvasPlayerCount.getContext("2d")
+
+function updateChart(chart, data, options) {
+  if (options && options.prepend === true) {
+    chart.data.datasets[0].data.unshift(data)
+  } else {
+    chart.data.datasets[0].data.push(data)
+  }
+  
   chart.update()
 }
 
-var tpsLineChart = new Chart(ctx, {
+var tpsLineChart = new Chart(ctxTPS, {
   type: "line",
   data: {
     datasets: [{
       label: "TPS",
-      data: []
+      data: [],
+      backgroundColor: "#82B1FF", // blue A100
+      borderColor: "#2979FF" // blue A400
     }]
   },
   options: {
@@ -43,6 +55,32 @@ var tpsLineChart = new Chart(ctx, {
   }
 })
 
+var playerCountLineChart = new Chart(ctxPlayerCount, {
+	  type: "line",
+	  data: {
+	    datasets: [{
+	      label: "Players",
+	      data: [],
+	      backgroundColor: "#69F0AE", // green A200
+	      borderColor: "#00C853" // green A700
+	    }]
+	  },
+	  options: {
+	    responsive: false,
+	    scales: {
+	      xAxes: [{
+	        type: "time",
+	      }],
+	      yAxes: [{
+	        ticks: {
+	          beginAtZero: true,
+	          min: 0
+	        }
+	      }]
+	    }
+	  }
+	})
+
 var intervalTask = function() {
   request(UPDATE_DATA_URL, function(res) {
 	console.log(res)
@@ -55,24 +93,42 @@ var intervalTask = function() {
     var tps = data.tps
     var playerCount = data.playerCount
 
-    updateChart(tpsLineChart, {
+    if (tps > 0) {
+    	updateChart(tpsLineChart, {
+        	x: new Date(time),
+        	y: tps
+        })
+    }
+	
+	updateChart(playerCountLineChart, {
     	x: new Date(time),
-    	y: tps
+    	y: playerCount
     })
   })
 }
 
-setInterval(intervalTask, 2000)
+intervalTask()
+setInterval(intervalTask, UPDATE_INTERVAL)
 
 request(GET_PAST_DATA_URL, function(res) {
   console.log(res)
   
-  var tpsRecord = JSON.parse(res)
+  var records = JSON.parse(res)
   
-  for (let tpsRecordItem of tpsRecord) {
+  var tpsRecord = records.tps
+  var playerCountRecord = records.playerCount
+  
+  for (let tpsRecordItem of tpsRecord.reverse()) { // reverse because we are prepending
 	  updateChart(tpsLineChart, {
 		  x: new Date(tpsRecordItem.time),
 		  y: tpsRecordItem.tps
-	  })
+	  }, { prepend: true })
+  }
+  
+  for (let playerCountRecordItem of playerCountRecord.reverse()) { // reverse because we are prepending
+	  updateChart(playerCountLineChart, {
+		  x: new Date(playerCountRecordItem.time),
+		  y: playerCountRecordItem.playerCount
+	  }, { prepend: true })
   }
 })
