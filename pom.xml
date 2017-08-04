@@ -2,15 +2,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>yy.gov.yeyacraft.statusgrapher</groupId>
   <artifactId>StatusGrapher</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>StatusGrapher</name>
   
   <dependencies>
     <dependency>
-      <groupId>com.sparkjava</groupId>
-      <artifactId>spark-core</artifactId>
-      <version>2.5</version>
-    </dependency>
+	  <groupId>com.sparkjava</groupId>
+	  <artifactId>spark-core</artifactId>
+      <version>2.6.0</version>
+	</dependency>
   </dependencies>
   
   <build>
@@ -21,10 +21,10 @@
         <directory>.</directory>
         <includes>
           <include>plugin.yml</include>
+          <include>LICENSE</include>
+          <include>NOTICE</include>
+          <include>third-party-licenses/**/*.*</include>
         </includes>
-      </resource>
-      <resource>
-      	<directory>src/main/resources</directory>
       </resource>
     </resources>
     
