@@ -5,7 +5,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.apache.commons.io.IOUtils;
 import java.nio.charset.StandardCharsets;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
 import org.json.simple.JSONObject;
 
 import spark.Request;
@@ -14,7 +13,7 @@ import spark.Route;
 import spark.Spark;
 import static spark.Spark.*;
 
-public class Main extends JavaPlugin implements Listener {
+public class Main extends JavaPlugin {
 	
 	TimerTask calculateTPSTask = new CalculateValues();
 	
@@ -36,6 +35,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		get("/", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
+				res.type("text/html");
 				return IOUtils.toString(
 						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/index.html"),
 						StandardCharsets.UTF_8.name()
@@ -45,6 +45,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		get("/script.js", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
+				res.type("application/javascript");
 				return IOUtils.toString(
 						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/script.js"),
 						StandardCharsets.UTF_8.name()
