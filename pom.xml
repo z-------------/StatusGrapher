@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>yy.gov.yeyacraft.statusgrapher</groupId>
   <artifactId>StatusGrapher</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.0</version>
   <name>StatusGrapher</name>
   
   <dependencies>
