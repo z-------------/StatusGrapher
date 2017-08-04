@@ -6,12 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/user/Spigot build/Spigot/Spigot-API/target/spigot-api-1.12-R0.1-SNAPSHOT-shaded.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/user/Spigot build/CraftBukkit/target/craftbukkit-1.12-R0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -23,5 +17,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/user/Spigot build/1.12.1/spigot-1.12.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
