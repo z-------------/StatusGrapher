@@ -45,7 +45,7 @@ public class Main extends JavaPlugin {
 		
 		// set up Spark server
 		
-		final String STATIC_FILES_LOCATION = "/static";
+		final String STATIC_FILES_LOCATION = "/main/resources/static";
 		
 		get("/", new Route() {
 			public Object handle(Request req, Response res) throws Exception {

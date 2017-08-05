@@ -32,6 +32,9 @@ var ctxTPS = canvasTPS.getContext("2d")
 var canvasPlayerCount = document.querySelector(".chart--player-count")
 var ctxPlayerCount = canvasPlayerCount.getContext("2d")
 
+var tableTPSDataElem = document.querySelector(".table_tps_data")
+var tablePlayerCountDataElem = document.querySelector(".table_player-count_data")
+
 function updateChart(chart, data, options) {
   if (options && options.prepend === true) {
     chart.data.datasets[0].data.unshift(data)
@@ -112,12 +115,16 @@ var intervalTask = function() {
         	x: new Date(time),
         	y: tps
         })
+        
+        tableTPSDataElem.textContent = tps
     }
 	
 	updateChart(playerCountLineChart, {
     	x: new Date(time),
     	y: playerCount
     })
+    
+    tablePlayerCountDataElem.textContent = playerCount
   })
 }
 
