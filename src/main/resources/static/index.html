@@ -23,16 +23,20 @@ limitations under the License.
 				box-sizing: inherit;
 				font-family: inherit;
 			}
-			
+
 			body {
 				box-sizing: border-box;
 				font-family: "Helvetica Neue", "Noto Sans", sans-serif;
 			}
-			
+
+			.tooltip-help {
+				cursor: help;
+			}
+
 			canvas {
 				display: inline-block;
 			}
-			
+
 			td, th {
 				border: solid 1px #dddddd;
 			}
@@ -41,9 +45,15 @@ limitations under the License.
 	<body>
 		<h1>StatusGrapher</h1>
 
-		<canvas class="chart chart--tps" width="500" height="375"></canvas>
-		<canvas class="chart chart--player-count" width="500" height="375"></canvas>
-		
+		<section class="section--tps">
+			<canvas class="chart chart--tps" width="400" height="300"></canvas>
+			<div class="stats-container"></div>
+		</section>
+		<section class="section--player-count">
+			<canvas class="chart chart--player-count" width="400" height="300"></canvas>
+			<div class="stats-container"></div>
+		</section>
+
 		<table class="table">
 			<tr class="table_tps">
 				<th>TPS</th>
@@ -56,6 +66,7 @@ limitations under the License.
 		</table>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+		<script src="stats.js"></script>
 		<script src="script.js"></script>
 	</body>
 </html>

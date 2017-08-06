@@ -24,10 +24,10 @@ import net.minecraft.server.v1_12_R1.MinecraftServer;
 
 class CalculateValues extends TimerTask {
 	
-	private float tps;
+	private float tps = -1; // real value will prob. never be -1 so client knows if output is valid or not (e.g. tps)
 	private JSONArray tpsRecord = new JSONArray();
 	
-	private int playerCount;
+	private int playerCount = -1;
 	private JSONArray playerCountRecord = new JSONArray();
 	
 	long timeLastRun; // default value is 0L
@@ -37,6 +37,9 @@ class CalculateValues extends TimerTask {
     public void run() {
     	
     	long timeNow = System.currentTimeMillis();
+      
+      // TPS
+      
     	int tickNow = MinecraftServer.currentTick;
     	
     	if (timeLastRun != 0L && tickLastRun != 0) {
@@ -61,7 +64,10 @@ class CalculateValues extends TimerTask {
     		
     	} else {
     		// waiting for second set of data to use to calculate TPS
+        // this.tps is still -1F
     	}
+      
+      // player count
     	
     	this.playerCount = Bukkit.getOnlinePlayers().size();
     	
@@ -71,12 +77,16 @@ class CalculateValues extends TimerTask {
     	playerCountRecord.add(playerCountRecordItem);
     	if (playerCountRecord.size() > 1000) {
     		playerCountRecord.remove(0);
-		}
+      }
+      
+      // save data from this run to use next time (e.g. for TPS calculation)
     	
     	timeLastRun = System.currentTimeMillis();
-		tickLastRun = MinecraftServer.currentTick;
+      tickLastRun = MinecraftServer.currentTick;
     	
     }
+    
+    // tps getters
     
     public float getTPS() {
     	return this.tps;
@@ -85,6 +95,8 @@ class CalculateValues extends TimerTask {
     public JSONArray getTPSRecord() {
     	return this.tpsRecord;
     }
+    
+    // player count getters
     
     public int getPlayerCount() {
     	return this.playerCount;
