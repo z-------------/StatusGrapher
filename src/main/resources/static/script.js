@@ -12,25 +12,6 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-const request = function(url, callback) {
-  var req = new XMLHttpRequest()
-  req.addEventListener("load", function() {
-    callback(this.responseText, this)
-  })
-  req.open("GET", url)
-  req.send()
-}
-
-const dashedToCamelCase = function(input) {
-  var words = input.split("-")
-  for (let i = 1; i < words.length; i++) {
-    var letters = words[i].split("")
-    letters[0] = letters[0].toUpperCase()
-    words[i] = letters.join("")
-  }
-  return words.join("")
-}
-
 const UPDATE_INTERVAL = 10 * 1000; // doesn't have to match the one in Main.java, but if it's too high then we'll just be getting repeats of the same data
 
 const GET_PAST_DATA_URL = "/get_past_data"
@@ -54,9 +35,9 @@ const statsParameters = [{
 }, {
   function: stats.modeQuick, label: "mode"
 }, {
-  function: Math.min, label: "min"
+  function: function(values) { return Math.min.apply(window, values) }, label: "min"
 }, {
-  function: Math.max, label: "max"
+  function: function(values) { return Math.max.apply(window, values) }, label: "max"
 }]
 
 const updateChart = function(chart, data, options) {
@@ -79,24 +60,26 @@ const updateChart = function(chart, data, options) {
 5 * (stat. param. index) + (interval index)
 **/
 const updateStats = function(id) {
+  var idInfo = ids[id]
   var now = new Date().getTime()
-  var tds = tableElem.querySelectorAll("td")
-  if (ids.hasOwnProperty(id)) {
-    var tableElem = ids[id].statsContainer.querySelector("table")
-    for (let i = 0, l = statsIntervals.length; i < l; i++) {
-      var interval = statsIntervals[i]
-      var intervalSize = interval.size
-      var relevantValues = []
-      for (let j = values.length - 1; j >= 0; j--) {
-        if (now - values[j].time < intervalSize) {
-          relevantValues.push(values[j][id])
-        }
-      }
-      for (let p = 0, l = statsParameters.length; p < l; p++) {
-        tds[5 * i + p].textContent = statsParameters[p].function(relevantValues)
-      }
-    }
-  }
+  var tds = idInfo.statsContainer.querySelectorAll("td")
+  
+	var tableElem = idInfo.statsContainer.querySelector("table")
+	for (let i = 0, l = statsIntervals.length; i < l; i++) {
+	  var interval = statsIntervals[i]
+	  var intervalSize = interval.size
+	  var relevantValues = []
+	  for (let j = values[id].length - 1; j >= 0; j--) {
+	    if (now - values[id][j].time < intervalSize) {
+	      relevantValues.push(values[id][j][id])
+	    }
+	  }
+	  console.log(relevantValues)
+	  for (let p = 0, l = statsParameters.length; p < l; p++) {
+		  console.log(id + " " + statsParameters[p].label + ": " + statsParameters[p].function(relevantValues))
+	    tds[5 * p + i].textContent = statsParameters[p].function(relevantValues).toFixed(2).toString()
+	  }
+	}
 }
 
 var tpsLineChart = new Chart(document.querySelector(".chart--tps").getContext("2d"), {
@@ -145,7 +128,8 @@ var playerCountLineChart = new Chart(document.querySelector(".chart--player-coun
       yAxes: [{
         ticks: {
           beginAtZero: true,
-          min: 0
+          min: 0,
+          stepSize: 1
         }
       }]
     }
@@ -170,6 +154,34 @@ for (let id of Object.keys(ids)) {
   values[id] = []
 }
 
+//cols: statsIntervals.length + 1
+//rows: 5 (mean, median, mode, min, max) + 1 = 6
+(function() {
+	for (let id of Object.keys(ids)) {
+	 var tableElem = document.createElement("table")
+	
+	 // make first row
+	 var firstRowElem = document.createElement("tr")
+	 firstRowElem.innerHTML = "<th></th>"
+	 for (let i = 0, l = statsIntervals.length; i < l; i++) {
+	   firstRowElem.innerHTML += `<th>${statsIntervals[i].label}</th>`
+	 }
+	 tableElem.appendChild(firstRowElem)
+	
+	 // make the other rows
+	 for (let i = 0; i < 5; i++) {
+	   var rowElem = document.createElement("tr")
+	   rowElem.innerHTML = `<th>${statsParameters[i].label}</th>`
+	   for (let i = 0, l = statsIntervals.length; i < l; i++) {
+	     rowElem.innerHTML += "<td></td>"
+	   }
+	   tableElem.appendChild(rowElem)
+	 }
+	 
+	 ids[id].statsContainer.appendChild(tableElem)
+	}
+}())
+
 var intervalTask = function() {
   request(UPDATE_DATA_URL, function(res) {
     console.log(res)
@@ -180,7 +192,7 @@ var intervalTask = function() {
 
     for (let id of Object.keys(ids)) {
       var value = data[id]
-      if (!Number.isFinite(value) && value > -1) {
+      if (Number.isFinite(value) && value > -1) {
         var valueObj = {}
         valueObj[id] = value
         valueObj.time = time
@@ -193,37 +205,11 @@ var intervalTask = function() {
 
         ids[id].tableDataElem.textContent = value
 
-        updateStats(ids[id])
+        updateStats(id)
       }
     }
   })
 }
-
-// cols: statsIntervals.length + 1
-// rows: 5 (mean, median, mode, min, max) + 1 = 6
-(function() {
-  for (let id of Object.keys(ids)) {
-    var tableElem = document.createElement("table")
-
-    // make first row
-    var firstRowElem = document.createElement("tr")
-    firstRowElem.innerHTML = "<td></td>"
-    for (let i = 0, l = statsIntervals.length; i < l; i++) {
-      firstRowElem.innerHTML += `<th>${statsIntervals[i].label}</th>`
-    }
-
-    // make the other rows
-    for (let i = 0; i < 5; i++) {
-      var rowElem = document.createElement("tr")
-      rowElem.innerHTML = `<th>${statsParameters[i].label}</th>`
-      for (let i = 1, l = statsIntervals.length; i < l; i++) {
-        rowElem.innerHTML += `<th>${statsIntervals[i].label}</th>`
-      }
-    }
-
-    ids[id].statsContainer.appendChild(tableElem)
-  }
-}())
 
 intervalTask()
 setInterval(intervalTask, UPDATE_INTERVAL)
@@ -237,16 +223,16 @@ request(GET_PAST_DATA_URL, function(res) {
     var record = records[id]
     for (let recordItem of record.reverse()) { // reverse because we are prepending
       var valueObj = {}
-      valueObj[id] = value
-      valueObj.time = time
+      valueObj[id] = recordItem[id]
+      valueObj.time = recordItem.time
       values[id].push(valueObj)
 
   	  updateChart(ids[id].chart, {
   		  x: new Date(recordItem.time),
-  		  y: recordItem.tps
+  		  y: recordItem[id]
   	  }, { prepend: true })
 
-      updateStats(ids[id])
+      updateStats(id)
     }
   }
 })

@@ -76,8 +76,18 @@ public class Main extends JavaPlugin {
 						);
 			}
 		});
+		
+		get("/basicHelpers.js", new Route() {
+			public Object handle(Request req, Response res) throws Exception {
+				res.type("application/javascript");
+				return IOUtils.toString(
+						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/basicHelpers.js"),
+						StandardCharsets.UTF_8.name()
+						);
+			}
+		});
 
-    get("/style.css", new Route() {
+	    get("/style.css", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
 				res.type("text/css");
 				return IOUtils.toString(

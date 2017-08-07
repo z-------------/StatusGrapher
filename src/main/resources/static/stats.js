@@ -15,12 +15,12 @@
 var stats = {}
 
 stats.mean = function(values) {
-  var length = values.length
+  var n = values.length
   var sum = 0
-  for (let i = 0; i < length; i++) {
-    sum += i
+  for (let i = 0; i < n; i++) {
+    sum += values[i]
   }
-  return sum/length
+  return sum/n
 }
 
 stats.median = function(values) { // returns Array

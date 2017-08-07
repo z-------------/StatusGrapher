@@ -18,29 +18,7 @@ limitations under the License.
 	<head>
 		<meta charset="utf-8" />
 		<title>StatusGrapher</title>
-		<style>
-			*, :before, :after {
-				box-sizing: inherit;
-				font-family: inherit;
-			}
-
-			body {
-				box-sizing: border-box;
-				font-family: "Helvetica Neue", "Noto Sans", sans-serif;
-			}
-
-			.tooltip-help {
-				cursor: help;
-			}
-
-			canvas {
-				display: inline-block;
-			}
-
-			td, th {
-				border: solid 1px #dddddd;
-			}
-		</style>
+		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
 		<h1>StatusGrapher</h1>
@@ -66,6 +44,7 @@ limitations under the License.
 		</table>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+		<script src="basicHelpers.js"></script>
 		<script src="stats.js"></script>
 		<script src="script.js"></script>
 	</body>

@@ -1,6 +1,6 @@
 main: yy.gov.yeyacraft.statusgrapher.Main
 name: StatusGrapher
-version: 0.1.1
+version: 0.2.1
 author: Zachary James Guard
 description: StatusGrapher... what else? --Gourd Clooney
 #commands:

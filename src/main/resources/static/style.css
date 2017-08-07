@@ -1,0 +1,21 @@
+*, :before, :after {
+  box-sizing: inherit;
+  font-family: inherit;
+}
+
+body {
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", "Noto Sans", sans-serif;
+}
+
+.tooltip-help {
+  cursor: help;
+}
+
+canvas {
+  display: inline-block;
+}
+
+td, th {
+  border: solid 1px #dddddd;
+}
