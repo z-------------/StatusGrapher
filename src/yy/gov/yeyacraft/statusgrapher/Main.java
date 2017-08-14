@@ -15,6 +15,8 @@
 package yy.gov.yeyacraft.statusgrapher;
 
 import java.util.*;
+import java.util.regex.Pattern;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.apache.commons.io.IOUtils;
 import java.nio.charset.StandardCharsets;
@@ -43,59 +45,78 @@ public class Main extends JavaPlugin {
 		Timer timer = new Timer(true);
 		timer.scheduleAtFixedRate(calculateTPSTask, delay, period);
 
-		// set up Spark server
+		// set up Spark server and routes
 
-		final String STATIC_FILES_LOCATION = "/main/resources/static";
+		final String staticFilesRoot = "/main/resources/static";
+		
+		init(); // Spark.init()
 
 		get("/", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
 				res.type("text/html");
 				return IOUtils.toString(
-						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/index.html"),
-						StandardCharsets.UTF_8.name()
-						);
-			}
-		});
-
-		get("/script.js", new Route() {
-			public Object handle(Request req, Response res) throws Exception {
-				res.type("application/javascript");
-				return IOUtils.toString(
-						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/script.js"),
-						StandardCharsets.UTF_8.name()
-						);
-			}
-		});
-
-		get("/stats.js", new Route() {
-			public Object handle(Request req, Response res) throws Exception {
-				res.type("application/javascript");
-				return IOUtils.toString(
-						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/stats.js"),
+						Spark.class.getResourceAsStream(staticFilesRoot + "/index.html"),
 						StandardCharsets.UTF_8.name()
 						);
 			}
 		});
 		
-		get("/basicHelpers.js", new Route() {
+		final ArrayList<String> staticRoutes = new ArrayList<String>();
+		staticRoutes.add("script.js");
+		staticRoutes.add("stats.js");
+		staticRoutes.add("basicHelpers.js");
+		staticRoutes.add("style.css");
+		staticRoutes.add("chartjs/Chart.bundle.min.js");
+		staticRoutes.add("chartjs/chartjs-plugin-zoom.min.js");
+		
+		get("/:path", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
-				res.type("application/javascript");
-				return IOUtils.toString(
-						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/basicHelpers.js"),
-						StandardCharsets.UTF_8.name()
-						);
+				String path = req.params(":path");
+				if (staticRoutes.contains(path)) {
+					String[] pathParts = path.split(Pattern.quote("."));
+					String ext = pathParts[pathParts.length - 1];
+					if (ext == "html") {
+						res.type("text/html");
+					} else if (ext == "js") {
+						res.type("application/javascript");
+					} else if (ext == "css") {
+						res.type("text/css");
+					} // Spark default Content-Type is text/html
+					return IOUtils.toString(
+							Spark.class.getResourceAsStream(staticFilesRoot + "/" + path),
+							StandardCharsets.UTF_8.name()
+							);
+				} else {
+					res.status(404);
+					return "Error 404";
+				}
 			}
 		});
 
-	    get("/style.css", new Route() {
-			public Object handle(Request req, Response res) throws Exception {
-				res.type("text/css");
-				return IOUtils.toString(
-						Spark.class.getResourceAsStream(STATIC_FILES_LOCATION + "/style.css"),
-						StandardCharsets.UTF_8.name()
-						);
-			}
-		});
+//		for (int i = 0; i < staticRoutes.size(); i++) {
+//			final String path = staticRoutes.get(i);
+//			String[] pathParts = path.split(Pattern.quote("."));
+//			final String ext = pathParts[pathParts.length - 1];
+//			
+//			get("/" + path, new Route() {
+//				public Object handle(Request req, Response res) throws Exception {
+//					// try to set correct Content-Type
+//					if (ext == "html") {
+//						res.type("text/html");
+//					} else if (ext == "js") {
+//						res.type("application/javascript");
+//					} else if (ext == "css") {
+//						res.type("text/css");
+//					} else {
+//						res.type("text/html");
+//					}
+//					return IOUtils.toString(
+//							Spark.class.getResourceAsStream(staticFilesRoot + "/" + path),
+//							StandardCharsets.UTF_8.name()
+//							);
+//				}
+//			});
+//		}
 
 		get("/update_data", new Route() {
 			public Object handle(Request req, Response res) throws Exception {

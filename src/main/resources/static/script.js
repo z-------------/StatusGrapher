@@ -94,6 +94,7 @@ var tpsLineChart = new Chart(document.querySelector(".chart--tps").getContext("2
   },
   options: {
     responsive: false,
+    elements: { point: { hitRadius: 10, hoverRadius: 10 } },
     scales: {
       xAxes: [{
         type: "time",
@@ -105,7 +106,16 @@ var tpsLineChart = new Chart(document.querySelector(".chart--tps").getContext("2
           max: 20
         }
       }]
-    }
+    },
+    zoom: {
+      enabled: true,
+	  drag: true,
+	  mode: "x",
+	  limits: {
+	    max: 10,
+		min: 0.5
+	  }
+	}
   }
 })
 
@@ -121,6 +131,7 @@ var playerCountLineChart = new Chart(document.querySelector(".chart--player-coun
   },
   options: {
     responsive: false,
+    elements: { point: { hitRadius: 10, hoverRadius: 10 } },
     scales: {
       xAxes: [{
         type: "time",
@@ -132,7 +143,16 @@ var playerCountLineChart = new Chart(document.querySelector(".chart--player-coun
           stepSize: 1
         }
       }]
-    }
+    },
+    zoom: {
+      enabled: true,
+  	  drag: true,
+  	  mode: "x",
+  	  limits: {
+  	    max: 10,
+  		min: 0.5
+  	  }
+  	}
   }
 })
 
