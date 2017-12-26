@@ -22,6 +22,17 @@ limitations under the License.
 	</head>
 	<body>
 		<h1>StatusGrapher</h1>
+		
+		<table class="table">
+      <tr class="table_tps">
+        <th>TPS</th>
+        <td class="table_tps_data"></td>
+      </tr>
+      <tr class="table_player-count">
+        <th>Online players</th>
+        <td class="table_player-count_data"></td>
+      </tr>
+    </table>
 
 		<section class="section--tps">
 			<canvas class="chart chart--tps" width="400" height="300"></canvas>
@@ -31,17 +42,6 @@ limitations under the License.
 			<canvas class="chart chart--player-count" width="400" height="300"></canvas>
 			<div class="stats-container"></div>
 		</section>
-
-		<table class="table">
-			<tr class="table_tps">
-				<th>TPS</th>
-				<td class="table_tps_data"></td>
-			</tr>
-			<tr class="table_player-count">
-				<th>Online players</th>
-				<td class="table_player-count_data"></td>
-			</tr>
-		</table>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
 		<script src="basicHelpers.js"></script>

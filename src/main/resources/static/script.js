@@ -63,7 +63,7 @@ const updateStats = function(id) {
   var idInfo = ids[id]
   var now = new Date().getTime()
   var tds = idInfo.statsContainer.querySelectorAll("td")
-  
+
 	var tableElem = idInfo.statsContainer.querySelector("table")
 	for (let i = 0, l = statsIntervals.length; i < l; i++) {
 	  var interval = statsIntervals[i]
@@ -93,6 +93,7 @@ var tpsLineChart = new Chart(document.querySelector(".chart--tps").getContext("2
     }]
   },
   options: {
+    animation: false,
     responsive: false,
     elements: { point: { hitRadius: 10, hoverRadius: 10 } },
     scales: {
@@ -130,6 +131,7 @@ var playerCountLineChart = new Chart(document.querySelector(".chart--player-coun
     }]
   },
   options: {
+    animation: false,
     responsive: false,
     elements: { point: { hitRadius: 10, hoverRadius: 10 } },
     scales: {
@@ -179,7 +181,7 @@ for (let id of Object.keys(ids)) {
 (function() {
 	for (let id of Object.keys(ids)) {
 	 var tableElem = document.createElement("table")
-	
+
 	 // make first row
 	 var firstRowElem = document.createElement("tr")
 	 firstRowElem.innerHTML = "<th></th>"
@@ -187,7 +189,7 @@ for (let id of Object.keys(ids)) {
 	   firstRowElem.innerHTML += `<th>${statsIntervals[i].label}</th>`
 	 }
 	 tableElem.appendChild(firstRowElem)
-	
+
 	 // make the other rows
 	 for (let i = 0; i < 5; i++) {
 	   var rowElem = document.createElement("tr")
@@ -197,7 +199,7 @@ for (let id of Object.keys(ids)) {
 	   }
 	   tableElem.appendChild(rowElem)
 	 }
-	 
+
 	 ids[id].statsContainer.appendChild(tableElem)
 	}
 }())
@@ -237,12 +239,15 @@ setInterval(intervalTask, UPDATE_INTERVAL)
 request(GET_PAST_DATA_URL, function(res) {
   console.log(res)
 
-  var records = JSON.parse(res)
+  let records = JSON.parse(res)
 
   for (let id of Object.keys(ids)) {
-    var record = records[id]
-    for (let recordItem of record.reverse()) { // reverse because we are prepending
-      var valueObj = {}
+    let record = records[id]
+    let recordReversed = record.reverse() // reverse because we are prepending
+    for (let i = 0, l = recordReversed.length; i < l; i += 5) {
+      let recordItem = recordReversed[i]
+
+      let valueObj = {}
       valueObj[id] = recordItem[id]
       valueObj.time = recordItem.time
       values[id].push(valueObj)

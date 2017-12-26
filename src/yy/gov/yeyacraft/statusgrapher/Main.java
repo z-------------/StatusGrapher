@@ -38,7 +38,7 @@ public class Main extends JavaPlugin {
 
 		getLogger().info("onEnable");
 
-		// set up Timer for TPS
+		// set up Timer for recalculating TPS
 
 		long delay = 0;
 		long period = (long) (10 * 1000);
@@ -48,8 +48,6 @@ public class Main extends JavaPlugin {
 		// set up Spark server and routes
 
 		final String staticFilesRoot = "/main/resources/static";
-		
-		init(); // Spark.init()
 
 		get("/", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
@@ -68,55 +66,6 @@ public class Main extends JavaPlugin {
 		staticRoutes.add("style.css");
 		staticRoutes.add("chartjs/Chart.bundle.min.js");
 		staticRoutes.add("chartjs/chartjs-plugin-zoom.min.js");
-		
-		get("/:path", new Route() {
-			public Object handle(Request req, Response res) throws Exception {
-				String path = req.params(":path");
-				if (staticRoutes.contains(path)) {
-					String[] pathParts = path.split(Pattern.quote("."));
-					String ext = pathParts[pathParts.length - 1];
-					if (ext == "html") {
-						res.type("text/html");
-					} else if (ext == "js") {
-						res.type("application/javascript");
-					} else if (ext == "css") {
-						res.type("text/css");
-					} // Spark default Content-Type is text/html
-					return IOUtils.toString(
-							Spark.class.getResourceAsStream(staticFilesRoot + "/" + path),
-							StandardCharsets.UTF_8.name()
-							);
-				} else {
-					res.status(404);
-					return "Error 404";
-				}
-			}
-		});
-
-//		for (int i = 0; i < staticRoutes.size(); i++) {
-//			final String path = staticRoutes.get(i);
-//			String[] pathParts = path.split(Pattern.quote("."));
-//			final String ext = pathParts[pathParts.length - 1];
-//			
-//			get("/" + path, new Route() {
-//				public Object handle(Request req, Response res) throws Exception {
-//					// try to set correct Content-Type
-//					if (ext == "html") {
-//						res.type("text/html");
-//					} else if (ext == "js") {
-//						res.type("application/javascript");
-//					} else if (ext == "css") {
-//						res.type("text/css");
-//					} else {
-//						res.type("text/html");
-//					}
-//					return IOUtils.toString(
-//							Spark.class.getResourceAsStream(staticFilesRoot + "/" + path),
-//							StandardCharsets.UTF_8.name()
-//							);
-//				}
-//			});
-//		}
 
 		get("/update_data", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
@@ -152,6 +101,30 @@ public class Main extends JavaPlugin {
 
 				res.type("application/json");
 				return pastData.toString();
+			}
+		});
+		
+		get("/:path", new Route() {
+			public Object handle(Request req, Response res) throws Exception {
+				String path = req.params(":path");
+				if (staticRoutes.contains(path)) {
+					String[] pathParts = path.split(Pattern.quote("."));
+					String ext = pathParts[pathParts.length - 1];
+					if (ext == "html") {
+						res.type("text/html");
+					} else if (ext == "js") {
+						res.type("application/javascript");
+					} else if (ext == "css") {
+						res.type("text/css");
+					} // Spark default Content-Type is text/html
+					return IOUtils.toString(
+							Spark.class.getResourceAsStream(staticFilesRoot + "/" + path),
+							StandardCharsets.UTF_8.name()
+							);
+				} else {
+					res.status(404);
+					return "Error 404";
+				}
 			}
 		});
 

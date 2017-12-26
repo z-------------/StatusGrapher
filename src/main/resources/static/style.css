@@ -19,3 +19,7 @@ canvas {
 td, th {
   border: solid 1px #dddddd;
 }
+
+section {
+	display: inline-block;
+}
