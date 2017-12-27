@@ -58,7 +58,7 @@ public class Main extends JavaPlugin {
 						);
 			}
 		});
-		
+
 		final ArrayList<String> staticRoutes = new ArrayList<String>();
 		staticRoutes.add("script.js");
 		staticRoutes.add("stats.js");
@@ -103,18 +103,18 @@ public class Main extends JavaPlugin {
 				return pastData.toString();
 			}
 		});
-		
+
 		get("/:path", new Route() {
 			public Object handle(Request req, Response res) throws Exception {
 				String path = req.params(":path");
 				if (staticRoutes.contains(path)) {
 					String[] pathParts = path.split(Pattern.quote("."));
 					String ext = pathParts[pathParts.length - 1];
-					if (ext == "html") {
+					if (ext.equals("html")) {
 						res.type("text/html");
-					} else if (ext == "js") {
+					} else if (ext.equals("js")) {
 						res.type("application/javascript");
-					} else if (ext == "css") {
+					} else if (ext.equals("css")) {
 						res.type("text/css");
 					} // Spark default Content-Type is text/html
 					return IOUtils.toString(
